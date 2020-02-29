@@ -7,6 +7,19 @@ const axios = baseURL => {
     headers: { "X-Custom-Header": "foobar" }
   });
 
+  instance.interceptors.request.use(
+    config => {
+      const jwToken = global.auth.getToken();
+      // console.log(jwToken);
+      config.headers["Authorization"] = "Bearer " + jwToken;
+      return config;
+    },
+    error => {
+      console.log(error);
+      return Promise.reject(error);
+    }
+  );
+
   return instance;
 };
 

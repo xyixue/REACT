@@ -6,13 +6,16 @@ export default function Login(props) {
   const { register, handleSubmit, errors } = useForm();
 
   const onSubmit = async data => {
-    //2. 获取表单数据
-    const { email, password } = data;
-    //3. 处理登录逻辑
+    const { nickname, email, password } = data;
+    //3. 处理注册逻辑
     try {
-      const res = await axios.post("/auth/login", { email, password });
+      const res = await axios.post("/auth/register", {
+        nickname,
+        email,
+        password,
+        type: 0
+      });
       const jwToken = res.data;
-      // toast.success("login Success");
       global.auth.setToken(jwToken);
       props.history.push("/");
     } catch (error) {
@@ -24,6 +27,26 @@ export default function Login(props) {
     <div className="login-wrapper">
       <form className="box login-box" onSubmit={handleSubmit(onSubmit)}>
         {/* Login */}
+        <div className="field">
+          <label className="label">Nickname</label>
+          <div className="control">
+            <input
+              type="text"
+              className={`input ${errors.nikename && "is-danger"}`}
+              placeholder="Nikename"
+              name="nickname"
+              ref={register({
+                required: "Nikename is required"
+              })}
+            />
+            {errors.nickname && (
+              <p className="helper has-text-danger has-text-centered">
+                {errors.nickname.message}
+              </p>
+            )}
+          </div>
+        </div>
+
         <div className="field">
           <label className="label">Email</label>
           <div className="control">
@@ -71,7 +94,7 @@ export default function Login(props) {
           </div>
         </div>
         <div className="control">
-          <button className="button is-fullwidth is-primary">Login</button>
+          <button className="button is-fullwidth is-primary">Submit</button>
         </div>
       </form>
     </div>

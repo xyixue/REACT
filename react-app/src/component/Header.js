@@ -1,61 +1,45 @@
 import React, { Fragment } from "react";
-
+import { Link, withRouter } from "react-router-dom";
+import UserProfile from "component/UserProfile";
+import Panel from "component/Panel";
 // 函数式组件
-const Header =(props)  => (
+const Header = props => {
+  const toProfile = () => {
+    Panel.open({
+      component: UserProfile,
+      props: {
+        user: props.user
+      },
+      callback: data => {
+        if (data === "logout") {
+          props.history.go(0);
+        }
+      }
+    });
+  };
+
+  return (
     <div className="header">
       <div className="grid">
         <div className="start">
-          <a href="/">Home</a>
+          <Link to="/">Home</Link>
         </div>
         <div className="end">
-          {props.nickname ? (
-            <span className="nickname">
+          {props.user.nickname ? (
+            <span className="nickname" onClick={toProfile}>
               <i className="far fa-user"></i>
-              {props.nickname}
+              {props.user.nickname}
             </span>
           ) : (
             <Fragment>
-              <a href="/">Login</a>
-              <a href="/">Register</a>
+              <Link to="/login">Login</Link>
+              <Link to="/register">Register</Link>
             </Fragment>
           )}
         </div>
       </div>
     </div>
-);
+  );
+};
 
-//  类组件
-/* class Header extends React.Component {
-  renderLink() {
-    const nickname = this.props.nickname;
-    if (nickname) {
-      return (
-          <span className="nickname">
-          <i className="far fa-user"></i>
-          {this.props.nickname}
-          </span>);
-    } else {
-      return (
-        <Fragment>
-          <a href="/">Login</a>
-          <a href="/">Register</a>
-        </Fragment>
-      );
-    }
-  }
-
-  render() {
-    return (
-      <div className="header">
-        <div className="grid">
-          <div className="start">
-            <a href="/">Home</a>
-          </div>
-          <div className="end">{this.renderLink()}</div>
-        </div>
-      </div>
-    );
-  }
-} */
-
-export default Header;
+export default withRouter(Header);

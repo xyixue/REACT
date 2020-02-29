@@ -1,5 +1,6 @@
 import React from "react";
 import { formatPrice } from "common/helper";
+import { withRouter } from "react-router-dom";
 import Panel from "component/Panel";
 import EditInventory from "component/EditInventory";
 import axios from "common/axios";
@@ -21,10 +22,16 @@ class Product extends React.Component {
   };
 
   addCart = async () => {
+    if (!global.auth.isLogin()) {
+      this.props.history.push("/login");
+      toast.info("Please login First");
+      return;
+    }
     try {
       const { id, name, image, price } = this.props.product;
       const res = await axios.get(`/carts?productId=${id}`);
       const carts = res.data;
+      const user = global.auth.getUser() || {};
       if (carts && carts.length > 0) {
         const cart = carts[0];
         cart.mount += 1;
@@ -35,15 +42,29 @@ class Product extends React.Component {
           name,
           image,
           price,
-          mount: 1
+          mount: 1,
+          userID: user.email
         };
-
         await axios.post("/carts", cart);
+        console.log(res);
       }
       toast.success("Add Cart Success");
       this.props.updateCartNum();
     } catch (error) {
       toast.error("Add cart Error");
+    }
+  };
+
+  renderManagerBtn = () => {
+    const user = global.auth.getUser() || {};
+    if (user.type === 1) {
+      return (
+        <div className="p-head has-text-right" onClick={this.toEdit}>
+          <span className="icon edit-btn">
+            <i className="fas fa-sliders-h"></i>
+          </span>
+        </div>
+      );
     }
   };
 
@@ -58,11 +79,7 @@ class Product extends React.Component {
     return (
       <div className={_pClass[status]}>
         <div className="p-content">
-          <div className="p-head has-text-right" onClick={this.toEdit}>
-            <span className="icon edit-btn">
-              <i className="fas fa-sliders-h"></i>
-            </span>
-          </div>
+          {this.renderManagerBtn()}
           <div className="img-wrapper">
             <div className="out-stock-text">Out of Stock</div>
             <figure className="image is-4by3">
@@ -88,4 +105,4 @@ class Product extends React.Component {
   }
 }
 
-export default Product;
+export default withRouter(Product);

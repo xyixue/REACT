@@ -1,5 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import { toast } from "react-toastify";
 class ToolBox extends React.Component {
   state = {
     searchTexe: ""
@@ -17,6 +18,15 @@ class ToolBox extends React.Component {
       searchTexe: ""
     });
     this.props.search("");
+  };
+
+  goCart = () => {
+    if (!global.auth.isLogin()) {
+      this.props.history.push("/login");
+      toast.info("Please login First");
+      return;
+    }
+    this.props.history.push("/cart");
   };
 
   render() {
@@ -41,13 +51,13 @@ class ToolBox extends React.Component {
             </div>
           </div>
         </div>
-        <Link to="/cart" className="cart-box">
+        <div className="cart-box" onClick={this.goCart}>
           <i className="fas fa-shopping-cart"></i>
           <span className="cart-num">{this.props.cartNum}</span>
-        </Link>
+        </div>
       </div>
     );
   }
 }
 
-export default ToolBox;
+export default withRouter(ToolBox);

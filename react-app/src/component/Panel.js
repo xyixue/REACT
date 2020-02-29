@@ -69,5 +69,4 @@ const _div = document.createElement("div");
 document.body.appendChild(_div);
 
 const _panel = render(<Panel />, _div);
-console.log(_panel);
 export default _panel;
